@@ -28,15 +28,12 @@ public class BookingController {
         this.roomRepo = roomRepo;
     }
 
-    // ================= POST : Create Booking =================
     @PostMapping
     public ResponseEntity<Booking> createBooking(@RequestBody Booking booking) {
 
-        // Validate Guest
         Guest guest = guestRepo.findById(booking.getGuest().getGuestId())
                 .orElseThrow(() -> new RuntimeException("Guest not found with ID " + booking.getGuest().getGuestId()));
 
-        // Validate Room
         Room room = roomRepo.findById(booking.getRoom().getRoomId())
                 .orElseThrow(() -> new RuntimeException("Room not found with ID " + booking.getRoom().getRoomId()));
 
@@ -47,7 +44,6 @@ public class BookingController {
         return new ResponseEntity<>(saved, HttpStatus.CREATED);
     }
 
-    // ================= GET : All Bookings =================
     @GetMapping
     public ResponseEntity<List<Booking>> getAllBookings() {
         List<Booking> bookings = bookingRepo.findAll();
@@ -57,7 +53,6 @@ public class BookingController {
         return ResponseEntity.ok(bookings);
     }
 
-    // ================= GET : Booking by ID =================
     @GetMapping("/{id}")
     public ResponseEntity<Booking> getBookingById(@PathVariable Long id) {
         return bookingRepo.findById(id)
@@ -65,19 +60,16 @@ public class BookingController {
                 .orElse(ResponseEntity.status(HttpStatus.NOT_FOUND).build());
     }
 
-    // ================= PUT : Update Booking =================
     @PutMapping("/{id}")
     public ResponseEntity<Booking> updateBooking(@PathVariable Long id, @RequestBody Booking booking) {
         return bookingRepo.findById(id).map(existing -> {
 
-            // Update Guest if provided
             if (booking.getGuest() != null && booking.getGuest().getGuestId() != null) {
                 Guest guest = guestRepo.findById(booking.getGuest().getGuestId())
                         .orElseThrow(() -> new RuntimeException("Guest not found with ID " + booking.getGuest().getGuestId()));
                 existing.setGuest(guest);
             }
 
-            // Update Room if provided
             if (booking.getRoom() != null && booking.getRoom().getRoomId() != null) {
                 Room room = roomRepo.findById(booking.getRoom().getRoomId())
                         .orElseThrow(() -> new RuntimeException("Room not found with ID " + booking.getRoom().getRoomId()));
@@ -93,7 +85,6 @@ public class BookingController {
         }).orElse(ResponseEntity.status(HttpStatus.NOT_FOUND).build());
     }
 
-    // ================= DELETE : Booking =================
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteBooking(@PathVariable Long id) {
         if (!bookingRepo.existsById(id)) {

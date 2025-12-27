@@ -18,17 +18,14 @@ public class RoomController {
     private final RoomRepo roomRepo;
     private final RoomCategoryRepo roomCategoryRepo;
 
-    // Constructor Injection
     public RoomController(RoomRepo roomRepo, RoomCategoryRepo roomCategoryRepo) {
         this.roomRepo = roomRepo;
         this.roomCategoryRepo = roomCategoryRepo;
     }
 
-    // ===================== POST : Add Room =====================
     @PostMapping
     public ResponseEntity<Room> addRoom(@RequestBody Room room) {
 
-        // Validate category presence
         if (room.getRoomCategory() == null || room.getRoomCategory().getCategoryId() == null) {
             return ResponseEntity
                     .status(HttpStatus.BAD_REQUEST)
@@ -37,18 +34,15 @@ public class RoomController {
 
         Long categoryId = room.getRoomCategory().getCategoryId();
 
-        // Fetch full RoomCategory from DB
         RoomCategory category = roomCategoryRepo.findById(categoryId)
                 .orElseThrow(() -> new RuntimeException("RoomCategory not found"));
 
-        // Attach managed entity
         room.setRoomCategory(category);
 
         Room saved = roomRepo.save(room);
         return new ResponseEntity<>(saved, HttpStatus.CREATED);
     }
 
-    // ===================== GET : All Rooms =====================
     @GetMapping
     public ResponseEntity<List<Room>> getAllRooms() {
         List<Room> rooms = roomRepo.findAll();
@@ -58,7 +52,6 @@ public class RoomController {
         return ResponseEntity.ok(rooms);
     }
 
-    // ===================== GET : Room By ID =====================
     @GetMapping("/{id}")
     public ResponseEntity<Room> getRoomById(@PathVariable Long id) {
         return roomRepo.findById(id)
@@ -66,7 +59,6 @@ public class RoomController {
                 .orElse(ResponseEntity.status(HttpStatus.NOT_FOUND).build());
     }
 
-    // ===================== PUT : Update Room =====================
     @PutMapping("/{id}")
     public ResponseEntity<Room> updateRoom(@PathVariable Long id, @RequestBody Room room) {
 
@@ -89,7 +81,6 @@ public class RoomController {
         }).orElse(ResponseEntity.status(HttpStatus.NOT_FOUND).build());
     }
 
-    // ===================== GET : Rooms By Category Name =====================
     @GetMapping("/category/{name}")
     public ResponseEntity<List<Room>> getRoomsByCategoryName(@PathVariable String name) {
         List<Room> rooms = roomRepo.findByRoomCategory_CategoryName(name);
@@ -99,7 +90,6 @@ public class RoomController {
         return ResponseEntity.ok(rooms);
     }
 
-    // ===================== GET : Room By Room Number =====================
     @GetMapping("/number/{roomNumber}")
     public ResponseEntity<?> getRoomByNumber(@PathVariable String roomNumber) {
         List<Room> rooms = roomRepo.findByRoomNumber(roomNumber);

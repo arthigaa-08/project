@@ -41,7 +41,6 @@ public class RoomServiceImpl implements RoomService {
         }).orElse(null);
     }
 
-    // ✅ Correct method for nested property query
     @Override
     public List<Room> getRoomsByCategoryName(String categoryName) {
         return roomRepo.findByRoomCategory_CategoryName(categoryName);
